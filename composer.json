@@ -1,0 +1,18 @@
+{
+    "name": "php-final",
+    "type": "project",
+    "description": "An extremely simple PHP MVC application",
+    "homepage": "https://github.com/AnitaYip/php-final",
+    "authors": [
+        {
+            "name": "Anita",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "require-dev": {
+        "laravel/homestead": "^3.0"
+    }
+}
