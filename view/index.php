@@ -6,7 +6,7 @@
         <th>NAME</th>
         <th>EMAIL</th>
     </tr>
-    <?php foreach ($users as $user): ?>
+    <?php foreach ($users as $user) : ?>
             <tr>
                 <td>
                     <a href=<?php echo "/$user->id"; ?>>

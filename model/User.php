@@ -4,8 +4,9 @@ namespace application;
 
 use mysqli;
 
-class User {
-	private static $connection = NULL;
+class User
+{
+    private static $connection = null;
     public $id;
     public $name;
     public $email;
@@ -14,7 +15,7 @@ class User {
     public static function getConnection()
     {
         $connection = self::$connection;
-        if(!isset($connection)) {
+        if (!isset($connection)) {
             $connection = new mysqli('127.0.0.1:3306', 'homestead', 'secret', 'homestead');
         }
         return $connection;
@@ -23,20 +24,20 @@ class User {
     public function __construct($id, $name, $email)
     {
         $this->id = $id;
-    	$this->name = $name;
-    	$this->email = $email;
+        $this->name = $name;
+        $this->email = $email;
     }
 
     public static function create($name, $email)
     {
-        
+
     }
 
     public static function find($id)
     {
         $connection = self::getConnection();
         $result = $connection->query("SELECT * FROM users WHERE id = $id");
-        
+
         if (!$result) {
             echo 'query error';
             exit;
@@ -59,47 +60,48 @@ class User {
             echo 'query error';
             exit;
         }
-        if($result->num_rows == 0) {
+        if ($result->num_rows == 0) {
             echo "No users found in db";
             exit;
         }
         $users = [];
         foreach ($result as $user) {
-            array_push($users, new User($user['id'],$user['name'],$user['email']));
+            array_push($users, new User($user['id'], $user['name'], $user['email']));
         }
         return $users;
     }
 
     public static function initialize()
     {
-        return new User(NULL, NULL,NULL);
+        return new User(null, null, null);
     }
 
     public function save()
     {
-    	if (!$this->validate()) {
+        if (!$this->validate()) {
             return false;
         }
-    	$connection = self::getConnection();
-    	if(!isset($this->id)) {
-    		$result = $connection->query("INSERT INTO users (name, email) VALUES ('$this->name','$this->email')");
+        $connection = self::getConnection();
+        if (!isset($this->id)) {
+            $result = $connection->query("INSERT INTO users (name, email) VALUES ('$this->name','$this->email')");
             $this->id = $connection->insert_id;
-    		if ($result) {
-	            return $this;
-	        } else {
-	            echo "User creation failed.\n";
-	            return false;
-	        }
-    	} else {
-    		$result = $connection->query("UPDATE users SET name='$this->name', email='$this->email' WHERE id=$this->id");
-    		if(isset($result)) {
-    			echo "User updated successfully.\n";
-    			return true;
-    		} else {
-    			echo "User updation failed.\n";
-    			return false;
-    		}
-    	}
+            if ($result) {
+                return $this;
+            } else {
+                echo "User creation failed.\n";
+                return false;
+            }
+        } else {
+            $query = "UPDATE users SET name='$this->name', email='$this->email' WHERE id=$this->id";
+            $result = $connection->query($query);
+            if (isset($result)) {
+                echo "User updated successfully.\n";
+                return true;
+            } else {
+                echo "User updation failed.\n";
+                return false;
+            }
+        }
     }
 
     public function destroy()
@@ -117,13 +119,13 @@ class User {
     public function validate()
     {
         $this->errors = array();
-        if ($this->name  && $this->email) {
+        if ($this->name && $this->email) {
             return true;
         } else {
-            if(!$this->name) {
+            if (!$this->name) {
                 array_push($this->errors, "Name is a mandatory field.\n");
             }
-            if(!$this->email) {
+            if (!$this->email) {
                 array_push($this->errors, "Email is a mandatory field.\n");
             }
         }

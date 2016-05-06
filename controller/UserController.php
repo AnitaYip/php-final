@@ -81,14 +81,14 @@ class UserController
         }
         $user->id = $id;
         $user->save();
-        if(count($user->errors) > 0) {
+        if (count($user->errors) > 0) {
             echo "Invalid user info:\n";
             foreach ($user->errors as $error) {
                 echo $error."\n";
             }
             include '../view/user.php';
         } else {
-            include '../view/show.php';    
+            include '../view/show.php';
         }
         
     }
@@ -96,7 +96,7 @@ class UserController
     public function destroy($id)
     {
         $user = new User($id, null, null);
-        if($user->destroy()){;
+        if ($user->destroy()) {
             $users = User::findAll();
             include '../view/index.php';
         } else {
