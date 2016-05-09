@@ -16,7 +16,7 @@ class User
     {
         $connection = self::$connection;
         if (!isset($connection)) {
-            $connection = new mysqli('127.0.0.1:3306', 'homestead', 'secret', 'homestead');
+            $connection = new mysqli('192.168.10.10:3306', 'homestead', 'secret', 'homestead');
         }
         return $connection;
     }
@@ -28,11 +28,6 @@ class User
         $this->email = $email;
     }
 
-    public static function create($name, $email)
-    {
-
-    }
-
     public static function find($id)
     {
         $connection = self::getConnection();
@@ -40,12 +35,12 @@ class User
 
         if (!$result) {
             echo 'query error';
-            exit;
+            return false;
         }
 
         if ($result->num_rows === 0) {
             echo "User not found with id: $id";
-            exit;
+            return false;
         }
         $user = $result->fetch_object();
         return new User($user->id, $user->name, $user->email);
