@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: ayip
+ * @author ayip
  * Date: 5/9/16
  * Time: 3:36 PM
  */
@@ -10,10 +10,25 @@ namespace application;
 
 use mysqli;
 
+/**
+ * Class UserRepository - Implements UserInterface and is responsible
+ * for database transactions with the users table.
+ *
+ * @package application
+ * @subpackage Repository
+ */
 class UserRepository implements UserInterface
 {
+    /**
+     * @var mysqli connection
+     */
     private static $connection;
 
+    /**
+     * Creates singleton instance of mysqli connection to the database.
+     *
+     * @return mysqli
+     */
     private static function getConnection()
     {
         $connection = self::$connection;
@@ -23,6 +38,9 @@ class UserRepository implements UserInterface
         return $connection;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function create(User $user)
     {
         $connection = self::getConnection();
@@ -36,6 +54,9 @@ class UserRepository implements UserInterface
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function update(User $user)
     {
         $connection = self::getConnection();
@@ -50,6 +71,9 @@ class UserRepository implements UserInterface
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function destroy($id)
     {
         $result = self::getConnection()->query("DELETE FROM users WHERE id = $id");
@@ -62,6 +86,9 @@ class UserRepository implements UserInterface
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function find($id)
     {
         $connection = self::getConnection();
@@ -79,6 +106,9 @@ class UserRepository implements UserInterface
         return $result->fetch_object();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function findAll()
     {
         $connection = self::getConnection();

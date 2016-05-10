@@ -1,13 +1,33 @@
 <?php
+/**
+ * @author: ayip
+ */
 
 namespace application;
 
+/**
+ * Class UserController - Controller responsible for handling the user specific operations.
+ *
+ * @package application
+ * @subpackage Controller
+ */
 class UserController
 {
+    /**
+     * @var User model instance
+     */
     private $user;
 
+    /**
+     * @var UserRepository data access object instance
+     */
     private $userRepository;
 
+    /**
+     * Instantiates the UserRepository object and injects it into the User model class.
+     *
+     * UserController constructor.
+     */
     public function __construct()
     {
         /*
@@ -17,6 +37,9 @@ class UserController
         $this->user = User::initialize($this->userRepository);
     }
 
+    /**
+     * Routes the GET requests to corresponding functions.
+     */
     public function handleGet()
     {
         $uri = $_SERVER['REQUEST_URI'];
@@ -38,6 +61,9 @@ class UserController
 
     }
 
+    /**
+     * Routes the POST requests to corresponding functions.
+     */
     public function handlePost()
     {
         switch ($_GET['method']) {
@@ -55,30 +81,53 @@ class UserController
         }
     }
 
+    /**
+     * Function that fetches the details of the given user and then routes to view user details page on UI.
+     *
+     * @param int $id Id of the user whose info is to be displayed.
+     */
     public function show($id)
     {
         $user = User::find($id);
         include '../view/show.php';
     }
 
+    /**
+     * Function that fetches all the users and then routes to the home page on UI.
+     */
     public function index()
     {
         $users = User::findAll();
         include '../view/index.php';
     }
 
+    /**
+     * Function that routes to edit user details page on UI along with the user info.
+     *
+     * @param int $id Id of the user whose data is to be updated.
+     */
     public function edit($id)
     {
         $user = User::find($id);
         include '../view/user.php';
     }
 
+    /**
+     * Function that routes to create new user page on UI.
+     */
     public function new()
     {
         $user = User::initialize($this->userRepository);
         include '../view/user.php';
     }
 
+    /**
+     * Function that handles save operation when either a new user is
+     * created or an existing user data is updated.
+     *
+     * @param int $id - Null will be passed for new user or
+     * else id of the user whose data is being updated.
+     */
     public function save($id)
     {
         $user = User::initialize($this->userRepository);
@@ -99,6 +148,11 @@ class UserController
         
     }
 
+    /**
+     * Function that handles user delete request.
+     *
+     * @param int $id Id of the user to be deleted
+     */
     public function destroy($id)
     {
         $user = new User($id, null, null);

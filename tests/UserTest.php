@@ -9,14 +9,21 @@ use \Faker\Factory as Faker;
 use \Mockery as Mockery;
 
 /**
- * Created by PhpStorm.
- * User: ayip
+ * Unit test that tests the functionality in User model class.
+ *
+ * @author : ayip
  * Date: 5/6/16
  * Time: 12:08 PM
  */
 class UserTest extends \PHPUnit_Framework_TestCase
 {
 
+    /**
+     * Test case to test the write operations in User model class.
+     *
+     * Uses Faker to create fake data for the Users create a new user object or update an existing user,
+     * find a user or delete a given user.
+     */
     public function testWrites()
     {
         $numOfUsers = count(User::findAll());
@@ -47,6 +54,9 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    /**
+     * Test case to unit test user validation.
+     */
     public function testValidation()
     {
         $faker = Faker::create();
@@ -85,6 +95,9 @@ class UserTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * Test case that mocks the DB operations in data access object and tests only the model class.
+     */
     public function testMockDB()
     {
         $mockUserRepository = Mockery::mock('\application\UserInterface');
