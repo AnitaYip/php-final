@@ -2,24 +2,13 @@
 
 namespace application;
 
-use mysqli;
-
 class User
 {
-    private static $connection = null;
+    public static $userRepository;
     public $id;
     public $name;
     public $email;
     public $errors = array();
-
-    public static function getConnection()
-    {
-        $connection = self::$connection;
-        if (!isset($connection)) {
-            $connection = new mysqli('192.168.10.10:3306', 'homestead', 'secret', 'homestead');
-        }
-        return $connection;
-    }
 
     public function __construct($id, $name, $email)
     {
@@ -30,35 +19,14 @@ class User
 
     public static function find($id)
     {
-        $connection = self::getConnection();
-        $result = $connection->query("SELECT * FROM users WHERE id = $id");
+        $user = self::$userRepository->find($id);
 
-        if (!$result) {
-            echo 'query error';
-            return false;
-        }
-
-        if ($result->num_rows === 0) {
-            echo "User not found with id: $id";
-            return false;
-        }
-        $user = $result->fetch_object();
         return new User($user->id, $user->name, $user->email);
     }
 
     public static function findAll()
     {
-        $connection = self::getConnection();
-        $result = $connection->query("select * from users");
-
-        if (!$result) {
-            echo 'query error';
-            exit;
-        }
-        if ($result->num_rows == 0) {
-            echo "No users found in db";
-            exit;
-        }
+        $result = self::$userRepository->findAll();
         $users = [];
         foreach ($result as $user) {
             array_push($users, new User($user['id'], $user['name'], $user['email']));
@@ -66,8 +34,9 @@ class User
         return $users;
     }
 
-    public static function initialize()
+    public static function initialize(UserInterface $userRepository)
     {
+        self::$userRepository = $userRepository;
         return new User(null, null, null);
     }
 
@@ -76,39 +45,16 @@ class User
         if (!$this->validate()) {
             return false;
         }
-        $connection = self::getConnection();
         if (!isset($this->id)) {
-            $result = $connection->query("INSERT INTO users (name, email) VALUES ('$this->name','$this->email')");
-            $this->id = $connection->insert_id;
-            if ($result) {
-                return $this;
-            } else {
-                echo "User creation failed.\n";
-                return false;
-            }
+            return $this->getUserRepository()->create($this);
         } else {
-            $query = "UPDATE users SET name='$this->name', email='$this->email' WHERE id=$this->id";
-            $result = $connection->query($query);
-            if (isset($result)) {
-                echo "User updated successfully.\n";
-                return true;
-            } else {
-                echo "User updation failed.\n";
-                return false;
-            }
+            return $this->getUserRepository()->update($this);
         }
     }
 
     public function destroy()
     {
-        $result = self::getConnection()->query("DELETE FROM users WHERE id = $this->id");
-        if (isset($result)) {
-            echo "User deleted successfully.\n";
-            return true;
-        } else {
-            echo "User deletion failed.\n";
-            return false;
-        }
+        return $this->getUserRepository()->destroy($this->id);
     }
 
     public function validate()
@@ -127,4 +73,8 @@ class User
         return false;
     }
 
+    private function getUserRepository()
+    {
+        return self::$userRepository;
+    }
 }

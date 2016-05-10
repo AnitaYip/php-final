@@ -6,6 +6,7 @@ require_once(dirname(__FILE__).'/../model/User.php');
 require_once(dirname(__FILE__).'/../vendor/autoload.php');
 
 use \Faker\Factory as Faker;
+use \Mockery as Mockery;
 
 /**
  * Created by PhpStorm.
@@ -82,5 +83,44 @@ class UserTest extends \PHPUnit_Framework_TestCase
         foreach ($user->errors as $index1 => $error) {
             $this->assertFalse(strpos($error, 'name'), "Name field should not have a validation set. \n");
         }
+    }
+
+    public function testMockDB()
+    {
+        $mockUserRepository = Mockery::mock('\application\UserInterface');
+        $faker = Faker::create();
+
+        // Mock 'create' method of UserRepository
+        $mockUserRepository->shouldReceive('create')->once()->andReturn(true);
+        $user = User::initialize($mockUserRepository);
+        $user->name = $faker->name;
+        $user->email = $faker->email;
+
+        $this->assertTrue($user->save());
+
+        // Mock 'update' method of UserRepository
+        $mockUserRepository->shouldReceive('update')->once()->andReturn(true);
+        $user = User::initialize($mockUserRepository);
+        $user->id = $faker->randomDigit;
+        $user->name = $faker->name;
+        $user->email = $faker->email;
+
+        $this->assertTrue($user->save());
+
+        // Mock 'destroy' method of UserRepository
+        $mockUserRepository->shouldReceive('destroy')->once()->andReturn(true);
+        $user = User::initialize($mockUserRepository);
+        $user->id = $faker->randomDigit;
+
+        $this->assertTrue($user->destroy());
+
+        // Mock 'find' method of UserRepository
+        $id = $faker->randomDigit;
+        $fakeUser = new User($id, $faker->name, $faker->email);
+        $mockUserRepository->shouldReceive('find')->once()->andReturn($fakeUser);
+        User::$userRepository = $mockUserRepository;
+
+        $this->assertEquals($fakeUser, User::find($id));
+
     }
 }

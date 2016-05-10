@@ -2,8 +2,11 @@
 
 namespace application;
 
+require_once '../repository/UserInterface.php';
+require_once '../repository/UserRepository.php';
 require_once '../controller/UserController.php';
 require_once '../model/User.php';
+
 
 
 $controller = new UserController();

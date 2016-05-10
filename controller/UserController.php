@@ -6,9 +6,15 @@ class UserController
 {
     private $user;
 
+    private $userRepository;
+
     public function __construct()
     {
-        $this->user = User::initialize();
+        /*
+         * Using the controller itself as a DI Container
+         */
+        $this->userRepository = new UserRepository();
+        $this->user = User::initialize($this->userRepository);
     }
 
     public function handleGet()
@@ -69,13 +75,13 @@ class UserController
 
     public function new()
     {
-        $user = User::initialize();
+        $user = User::initialize($this->userRepository);
         include '../view/user.php';
     }
 
     public function save($id)
     {
-        $user = User::initialize();
+        $user = User::initialize($this->userRepository);
         foreach ($_POST as $key => $value) {
             $user->$key = trim($value);
         }
